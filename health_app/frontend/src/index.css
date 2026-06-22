@@ -1,0 +1,4 @@
+/* Override Bootstrap's dull default muted grey with a brighter, more readable shade */
+.text-muted {
+  color: #2d3748 !important;
+}
