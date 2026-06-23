@@ -107,7 +107,7 @@ export default function App() {
   return (
     <div className="min-vh-100" style={{ background: "#f0f4f8" }}>
       {/* Navbar */}
-      <nav className="navbar navbar-dark shadow-sm" style={{ background: "#1a3c5e" }}>
+      <nav className="navbar navbar-dark shadow-sm sticky-top" style={{ background: "#1a3c5e", zIndex: 1030 }}>
         <div className="container-fluid px-4">
           <span className="navbar-brand fw-bold fs-4">
             <i className="bi bi-heart-pulse-fill me-2" style={{ color: "#4fc3f7" }}></i>MIRA Health Platform
