@@ -175,10 +175,10 @@ export default function App() {
           {/* Table */}
           <div className="col-12 col-lg-8">
             <div className="card border-0 shadow-sm">
-              <div className="card-header bg-white border-0 pt-3 pb-2 px-4">
-                <div className="d-flex justify-content-between align-items-center gap-3 flex-nowrap">
-                  <h5 className="fw-bold mb-0 flex-shrink-0" style={{ color: "#1a3c5e" }}>All Patients</h5>
-                  <div className="input-group input-group-sm" style={{ minWidth: "220px" }}>
+              <div className="card-header bg-white border-0 pt-3 pb-2 px-3">
+                <div className="d-flex flex-column gap-2">
+                  <h5 className="fw-bold mb-0" style={{ color: "#1a3c5e" }}>All Patients</h5>
+                  <div className="input-group input-group-sm">
                     <span className="input-group-text bg-white border-end-0">
                       <i className="bi bi-search text-muted"></i>
                     </span>
