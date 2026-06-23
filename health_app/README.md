@@ -5,14 +5,25 @@ A full-stack health prediction web application that collects patient blood test 
 
 ---
 
+## Live Demo
+
+| | URL |
+|---|---|
+| 🌐 **Frontend** | https://mira-health-app-olive.vercel.app |
+| ⚙️ **Backend API** | https://mira-backend-6bl5.onrender.com/api/patients/ |
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
 | Backend | Python · Django · Django REST Framework |
-| Database | MySQL |
+| Database | MySQL (Railway) |
 | Frontend | React.js · Bootstrap 5 · Bootstrap Icons · Vite |
 | AI/ML | Groq API – Llama 3.3 70B Versatile |
+| Deployment | Vercel (frontend) · Render (backend) · Railway (database) |
+| CI/CD | GitHub Actions |
 
 ---
 
@@ -25,92 +36,25 @@ A full-stack health prediction web application that collects patient blood test 
 - Search patients by name or email
 - Full input validation (email format, future date prevention, numeric checks) on both frontend and backend
 - Persistent MySQL storage
+- Automated CI/CD pipeline with GitHub Actions
 
 ---
 
-## Setup Instructions
+## CI/CD Pipeline
 
-### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- MySQL Server
-- Groq API key — free from https://console.groq.com
+Every push to `main` triggers the GitHub Actions pipeline:
 
----
-
-### Step 1 – MySQL Setup
-
-```bash
-sudo apt update
-sudo apt install mysql-server -y
-sudo systemctl start mysql
-sudo systemctl enable mysql
-
-sudo mysql -u root -p
 ```
-
-Inside the MySQL shell:
-```sql
-CREATE DATABASE health_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'health_user'@'localhost' IDENTIFIED BY 'your_password_here';
-GRANT ALL PRIVILEGES ON health_db.* TO 'health_user'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
+Push to main
+    ↓
+GitHub Actions
+    ├── Job 1: Test Backend  (Django system check)
+    ├── Job 2: Build Frontend (npm run build)
+    └── Job 3: Deploy confirmation (only if both pass)
+                ↓                        ↓
+          Render auto-deploys     Vercel auto-deploys
+            (Backend)               (Frontend)
 ```
-
----
-
-### Step 2 – Backend Setup
-
-```bash
-cd backend
-
-# Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install system dependency for mysqlclient
-sudo apt install libmysqlclient-dev python3-dev -y
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Set up environment variables
-cp .env.example .env
-nano .env   # Fill in your MySQL credentials and Groq API key
-```
-
-Your `.env` should look like:
-```
-DB_NAME=health_db
-DB_USER=health_user
-DB_PASSWORD=your_password_here
-DB_HOST=127.0.0.1
-DB_PORT=3306
-GROQ_API_KEY=your_groq_api_key_here
-```
-
-Run migrations and start the server:
-```bash
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
-```
-
-Backend runs at: **http://localhost:8000**
-
----
-
-### Step 3 – Frontend Setup
-
-```bash
-cd frontend
-
-npm install
-npm run dev
-```
-
-Frontend runs at: **http://localhost:5173**
 
 ---
 
@@ -119,17 +63,16 @@ Frontend runs at: **http://localhost:5173**
 | Method | Endpoint | Description |
 |---|---|---|
 | GET | `/api/patients/` | List all patients |
-| POST | `/api/patients/` | Create patient (triggers AI prediction) |
-| GET | `/api/patients/{id}/` | Get patient by ID |
-| PUT | `/api/patients/{id}/` | Update patient (regenerates AI prediction) |
+| POST | `/api/patients/` | Create new patient (triggers AI) |
+| GET | `/api/patients/{id}/` | Get single patient |
+| PUT | `/api/patients/{id}/` | Update patient (regenerates AI) |
 | DELETE | `/api/patients/{id}/` | Delete patient |
-| POST | `/api/patients/{id}/regenerate_remarks/` | Manually refresh AI remarks |
 
 ---
 
 ## AI Prediction Format
 
-When a patient record is saved or updated, the Groq API returns structured health insights in this format:
+When a patient record is saved or updated, the Groq API returns structured health insights:
 
 ```
 RISK_SCORE: 0–100
@@ -144,38 +87,101 @@ SUMMARY: overall health summary
 
 ---
 
+## Local Setup
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- MySQL Server
+- Groq API key — free from https://console.groq.com
+
+### Step 1 – MySQL Setup
+
+```bash
+sudo apt update && sudo apt install mysql-server -y
+sudo mysql -u root -p
+```
+
+```sql
+CREATE DATABASE health_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'health_user'@'localhost' IDENTIFIED BY 'your_password_here';
+GRANT ALL PRIVILEGES ON health_db.* TO 'health_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+### Step 2 – Backend Setup
+
+```bash
+cd health_app/backend
+python3 -m venv venv
+source venv/bin/activate
+sudo apt install libmysqlclient-dev python3-dev -y
+pip install -r requirements.txt
+cp .env.example .env   # Fill in your credentials
+python manage.py migrate
+python manage.py runserver
+```
+
+Your `.env` should look like this:
+```
+DB_NAME=health_db
+DB_USER=your_mysql_username
+DB_PASSWORD=your_mysql_password
+DB_HOST=127.0.0.1
+DB_PORT=3306
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+Backend runs at: **http://localhost:8000**
+
+### Step 3 – Frontend Setup
+
+```bash
+cd health_app/frontend
+npm install
+npm run dev
+```
+
+Frontend runs at: **http://localhost:5173**
+
+---
+
 ## Project Structure
 
 ```
-health_app/
-├── backend/
+mira-health-app/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml        # GitHub Actions CI/CD pipeline
+├── .gitignore                # Single root-level gitignore
+├── health_app/
 │   ├── backend/
-│   │   ├── settings.py       # Django configuration
-│   │   └── urls.py           # Root URL config
-│   ├── patients/
-│   │   ├── models.py         # Patient DB model
-│   │   ├── serializers.py    # DRF serializers + validation
-│   │   ├── views.py          # CRUD ViewSet
-│   │   ├── urls.py           # API routes
-│   │   └── groq_service.py   # Groq AI API integration
-│   ├── manage.py
-│   ├── requirements.txt
-│   ├── .env.example          # Template for environment variables
-│   └── .env                  # Local secrets — never committed
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx           # Main app + state management
-│   │   ├── index.css         # Global style overrides
-│   │   └── components/
-│   │       ├── PatientForm.jsx   # Add patient form
-│   │       ├── PatientTable.jsx  # Patient list table
-│   │       ├── EditModal.jsx     # Edit patient modal
-│   │       ├── ViewModal.jsx     # Full AI report modal
-│   │       ├── DeleteModal.jsx   # Delete confirmation modal
-│   │       └── Toast.jsx         # Notification toasts
-│   ├── package.json
-│   └── vite.config.js
-├── .gitignore
+│   │   ├── backend/
+│   │   │   ├── settings.py   # Django configuration
+│   │   │   └── urls.py       # Root URL config
+│   │   ├── patients/
+│   │   │   ├── models.py         # Patient DB model
+│   │   │   ├── serializers.py    # DRF serializers + validation
+│   │   │   ├── views.py          # Class-based API views
+│   │   │   ├── urls.py           # API routes
+│   │   │   └── groq_service.py   # Groq AI API integration
+│   │   ├── manage.py
+│   │   ├── requirements.txt
+│   │   └── .env.example      # Template — no real secrets
+│   └── frontend/
+│       ├── src/
+│       │   ├── App.jsx           # Main app + state management
+│       │   ├── index.css         # Global style overrides
+│       │   └── components/
+│       │       ├── PatientForm.jsx
+│       │       ├── PatientTable.jsx
+│       │       ├── EditModal.jsx
+│       │       ├── ViewModal.jsx
+│       │       ├── DeleteModal.jsx
+│       │       └── Toast.jsx
+│       ├── package.json
+│       └── vite.config.js
 └── README.md
 ```
 
@@ -183,9 +189,9 @@ health_app/
 
 ## Security Notes
 
-- The `.env` file is listed in `.gitignore` and must never be committed
-- Use `.env.example` as a template — it contains no real credentials
-- Never share your Groq API key publicly
+- `.env` is gitignored — never committed
+- `.env.example` contains only placeholder values
+- All secrets are stored as environment variables in Render and Vercel dashboards
 
 ---
 
