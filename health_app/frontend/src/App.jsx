@@ -52,8 +52,10 @@ export default function App() {
         const err = await res.json();
         throw new Error(JSON.stringify(err));
       }
+      const newPatient = await res.json();
       await fetchPatients();
       showToast("Patient added successfully with AI health prediction!");
+      setViewPatient(newPatient); // Auto-open the AI report
       return true;
     } catch (e) {
       showToast(`Error: ${e.message}`, "error");

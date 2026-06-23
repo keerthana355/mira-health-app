@@ -99,7 +99,7 @@ export default function PatientForm({ onSubmit, submitting }) {
                 Generating AI Prediction...
               </>
             ) : (
-              <><i className="bi bi-floppy-fill me-2"></i>Save Patient</>
+              <><i className="bi bi-floppy-fill me-2"></i>Analyse & Save</>
             )}
           </button>
         </form>
