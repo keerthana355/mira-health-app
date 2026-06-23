@@ -4,9 +4,6 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-env/
-venv/
-.venv/
 *.egg-info/
 dist/
 build/
@@ -17,18 +14,24 @@ local_settings.py
 db.sqlite3
 media/
 
+# Virtual environment
+venv/
+env/
+.venv/
+
 # Environment variables - NEVER commit these
 .env
 *.env
-# .env.example should be committed — it contains no real secrets
 
 # React / Node
 node_modules/
-dist/
-.DS_Store
+health_app/frontend/dist/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# macOS
+.DS_Store
