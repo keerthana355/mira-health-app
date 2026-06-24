@@ -197,4 +197,4 @@ mira-health-app/
 
 ## Author
 
-Developed as part of the Gokul Infocare Junior AI/ML Developer assessment (Task 1).
+Keerthana Banka
