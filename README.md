@@ -1,5 +1,5 @@
 # MIRA – Medical Intelligence Robotic Automation
-### Health Prediction Application | Junior AI/ML Developer Task 1
+### Health Prediction Application
 
 A full-stack health prediction web application that collects patient blood test results and uses the **Groq AI API (Llama 3.3 70B)** to generate intelligent health risk assessments and predictions.
 
